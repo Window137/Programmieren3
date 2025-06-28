@@ -1,9 +1,7 @@
-import { platform } from "os";
+const Square = require("./module");
 
-const message = "Die Plattform ist ";
-
+const mySquareObject = new Square(5);
 function main() {
-    console.log(message + platform())
+    console.log(mySquareObject.getArea());
 }
-
 main();
