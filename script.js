@@ -245,13 +245,13 @@ function getAllNeighbours(x, y, grid) {
         [-1, 1],  // top-right
         [-1, 0],  // top
         [-1, -1]  // top-left
-    ]
+    ];
 
-    const neighbours = []
+    const neighbours = [];
 
     for (const offset of neighbourOffsets) {
-        const newRow = y + offset[0]
-        const newCol = x + offset[1]
+        const newRow = y + offset[0];
+        const newCol = x + offset[1];
 
         if (newRow >= 0 && newRow < grid.length &&
             newCol >= 0 && newCol < grid[newRow].length) {
@@ -259,11 +259,11 @@ function getAllNeighbours(x, y, grid) {
             neighbours.push({
                 pos: [newRow, newCol],
                 value: grid[newRow][newCol]
-            })
+            });
         }
     }
 
-    shuffle(neighbours)
+    shuffle(neighbours);
 
     return neighbours
 }
@@ -271,38 +271,38 @@ function getAllNeighbours(x, y, grid) {
 
 //actualises the board from old_grid to new_grid by the game of life rules
 function actualiseBoard() {
-    let newGrid = grid.map(row => row.slice())
+    let newGrid = grid.map(row => row.slice());
 
     for (let y = 0; y < grid.length; y++) {
         for (let x = 0; x < grid[y].length; x++) {
             // Call nextStep and update the specific cell in newGrid
-            newGrid = grid[y][x].nextStep(x, y, grid)
+            newGrid = grid[y][x].nextStep(x, y, grid);
         }
     }
 
-    return newGrid
+    return newGrid;
 }
 
 
 //setup function
 function setup() {
-    createCanvas(1600, 1600)
-    frameRate(60)
-    noStroke()
-    background(51)
+    createCanvas(1600, 1600);
+    frameRate(60);
+    noStroke();
+    background(51);
 
     //draw inital grid
-    drawGrid(grid, SPACING, SIZE)
+    drawGrid(grid, SPACING, SIZE);
 }
 
 //resets, actualises and draws the board
 function draw() {
     if (keyIsPressed) {
-        gameActive = true
+        gameActive = true;
     }
 
     if (gameActive && frameCount % 5 == 0) {
-        grid = actualiseBoard()
-        drawGrid(grid, SPACING, SIZE)
+        grid = actualiseBoard();
+        drawGrid(grid, SPACING, SIZE);
     }
 }
