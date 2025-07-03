@@ -1,308 +1,324 @@
-/*
-Instructions:
-mouse click- Toggle cell
-keyboard press - start simulation
+class Empty { }
 
-*/
-
-//start settings
-
-class EmptyBeing {
-    constructor() {
-        this.color = '#505050';
-    }
-
-    nextStep(x, y, grid) {
-        return grid;
-    }
-}
-
+//Grass Klasse
 class Grass {
-    constructor(energy = Math.floor(Math.random() * 3)) {
-        this.energy = energy;
-        this.color = '#00FF00';
+  constructor() {
+    this.stepCount = frameCount + 1;
+    this.color = "green"; // farbe zu grÃ¼n
+    this.energy = int(random(1));
+  }
+
+  step() {
+    // ErhÃ¶ht die Energie des Gras um 1
+    this.energy++; // erhÃ¶t den energie um 1
+    if (this.energy >= 7) { // wenn die energie 7 ist
+      this.multiply(); //multizipliern
+      this.energy = 0; // dann energie auf 0 setzen
     }
+  }
 
-    nextStep(x, y, grid) {
-        this.energy += 1;
-        if (this.energy >= 7) {
-            const emptyNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof EmptyBeing);
-            const waterNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof Water);
-            const wallNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof Wall);
+  multiply() {
+    // Wenn leere Nachbarfelder gibt wird zufÃ¤llige eines ausgewÃ¤hlt und dort neues Gras erzeugt.
+    let emptyFields = findNeighbourPositions(this.row, this.col, 1, Empty);
 
-            if (emptyNeighbours.length > 0) {
-                const randomIndex = Math.floor(Math.random() * emptyNeighbours.length);
-                const randomNeighbour = emptyNeighbours[randomIndex];
-                const [neighbourY, neighbourX] = randomNeighbour.pos;
-                grid[neighbourY][neighbourX] = new Grass();
-                this.energy = 0;
-            }
-
-            if (waterNeighbours.length > 0) {
-                const randomIndex = Math.floor(Math.random() * waterNeighbours.length);
-                const randomNeighbour = waterNeighbours[randomIndex];
-                const [neighbourY, neighbourX] = randomNeighbour.pos;
-                grid[neighbourY][neighbourX] = new Grass(this.energy = 7);
-                this.energy += 3;
-            }
-
-            if (wallNeighbours.length > 0 && this.energy >= 27) {
-                const randomIndex = Math.floor(Math.random() * wallNeighbours.length);
-                const randomNeighbour = wallNeighbours[randomIndex];
-                const [neighbourY, neighbourX] = randomNeighbour.pos;
-                grid[neighbourY][neighbourX] = new Grass();
-                this.energy = 0;
-            }
-        }
-        return grid;
+    if (emptyFields.length > 0) {
+      let randomEmptyField = random(emptyFields);
+      let row = randomEmptyField[0];
+      let col = randomEmptyField[1];
+      matrix[row][col] = new Grass();
     }
+  }
 }
 
+// Grasseater klasse
 class GrassEater {
-    constructor() {
-        this.energy = 6;
-        this.color = '#FFFF00';
+  // Dein Code hier
+
+  constructor() {
+    this.stepCount = frameCount + 1;
+    this.color = "yellow";
+    this.energy = 5;
+  }
+
+  step() {
+    this.eat(); // isst
+    // Finde WasserNachbarn. wenn 7 oder mehr da sind, setze Zelle auf Wasser und stop
+    let WasserNachbarn = findNeighbourPositions(this.row, this.col, 1, Water);   // // Wasser-Nachbarn suchen
+    if (WasserNachbarn.length >= 7) {  // Wenn die abstand 7 ist
+      matrix[this.row][this.col] = new Water(); // neue wasser
+      return
     }
 
-    nextStep(x, y, grid) {
-        const grassNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof Grass);
-        const emptyNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof EmptyBeing);
-
-        if (this.energy <= -6) {
-            grid[y][x] = new EmptyBeing();
-        } else if (this.energy >= 10 && emptyNeighbours.length > 0) {
-            const randomIndex = Math.floor(Math.random() * emptyNeighbours.length);
-            const randomNeighbour = emptyNeighbours[randomIndex];
-            const [neighbourY, neighbourX] = randomNeighbour.pos;
-            this.energy -= 5;
-            grid[neighbourY][neighbourX] = new GrassEater();
-        } else if (grassNeighbours.length > 0) {
-            const randomIndex = Math.floor(Math.random() * grassNeighbours.length);
-            const randomNeighbour = grassNeighbours[randomIndex];
-            const [neighbourY, neighbourX] = randomNeighbour.pos;
-            this.energy += 1;
-            grid[neighbourY][neighbourX] = this;
-            grid[y][x] = new EmptyBeing();
-        } else if (emptyNeighbours.length > 0) {
-            const randomIndex = Math.floor(Math.random() * emptyNeighbours.length);
-            const randomNeighbour = emptyNeighbours[randomIndex];
-            const [neighbourY, neighbourX] = randomNeighbour.pos;
-            this.energy -= 0.1;
-            grid[neighbourY][neighbourX] = this;
-            grid[y][x] = new EmptyBeing();
-        } else {
-            this.energy -= 0.1;
-        }
-
-        return grid;
+    if (this.energy >= 20) { // wenn energie 20 isr
+      this.multiply(); // multiplizieren
+      this.energy -= 5; // energie - 5
+    } else if (this.energy <= 0) { // falls die Energie 0 ist
+      matrix[this.row][this.col] = new Empty(); // es stirbt
     }
+  }
+
+  eat() {
+    let grassNeighbours = findNeighbourPositions(this.row, this.col, 1, Grass);
+
+    if (grassNeighbours.length > 0) { // Wenn Gras da ist
+      let randomgrassfield = random(grassNeighbours); // WÃ¤hle Grasfeld
+      updateCreaturePosition(this, randomgrassfield);  // Bewege zum Gras
+      this.energy++; // Energie steigt +1
+    } else { // falls Kein Gras gefunden
+      let emptyNeighbours = findNeighbourPositions(this.row, this.col, 1, Empty); // Suche leere Felder
+      if (emptyNeighbours.length > 0) { // Wenn leerer Platz da ist
+        let newPos = random(emptyNeighbours); // WÃ¤hle leeres Feld
+        updateCreaturePosition(this, newPos); // Bewege dich hin
+      }
+      this.energy -= 1; // Energie geht runter
+    }
+  }
+
+  multiply() {
+        // Wenn leere Nachbarfelder gibt wird zufÃ¤llige eines ausgewÃ¤hlt und dort neues GrassEazer erzeugt.
+    let emptyPositions = findNeighbourPositions(this.row, this.col, 1, Empty);
+    if (emptyPositions.length > 0) {
+      let newPos = random(emptyPositions);
+      let row = newPos[0];
+      let col = newPos[1];
+      matrix[row][col] = new GrassEater();
+    }
+  }
 }
 
-class Water {
-    constructor(energy = 10) {
-        this.energy = energy;
-        this.color = '#0000FF';
+// Startenergie: Jeder Fleischfresser beginnt mit einer Energie von 100.
+// Nahrungssuche: In jedem Zyklus sucht der Fleischfresser in seiner unmittelbaren Umgebung nach Nahrung.
+//     Grasfresser gefunden:
+//         Der Fleischfresser bewegt sich auf das Feld, auf dem sich der Grasfresser befindet.
+//         Dadurch wird der Grasfresser "gefressen" und der Fleischfresser erhÃ¤lt 10 Energiepunkte dazu.
+//     Kein Grasfresser gefunden:
+//         Der Fleischfresser kann kein leeres Feld suchen, sondern verliert 1 Energiepunkt.
+// Fortpflanzung: Erreicht der Fleischfresser eine Energie von 120 oder mehr, pflanzt er sich fort.
+//     Er sucht nach einem leeren Feld in seiner Umgebung.
+//     Wenn ein leeres Feld gefunden wird, wird dort ein neuer Fleischfresser erstellt.
+//     Der ursprÃ¼ngliche Fleischfresser verliert 100 Energiepunkte durch die Fortpflanzung.
+// Tod: Sinkt die Energie des Fleischfressers auf 0 oder weniger, stirbt er und das Feld, auf dem er sich befand, wird leer.
+class MeatEater {
+  constructor() {
+    this.stepCount = frameCount + 1;
+    this.color = "red";
+    this.energy = 100;
+  }
+
+  step() {
+ // Finde WasserNachbarn. wenn 7 oder mehr da sind, setze Zelle auf Wasser und stop
+    let WasserNachbarn = findNeighbourPositions(this.row, this.col, 1, Water);
+    if (WasserNachbarn.length >= 7) { // Wenn es 7 oder mehr Wasser-Nachbarn gibt
+      matrix[this.row][this.col] = new Water();   // Dann wird diese Zelle zu Wasser.
+      return
     }
 
-    nextStep(x, y, grid) {
-        const emptyNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof EmptyBeing);
-        const carnivoreNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof Carnivore);
+    this.eat();
 
-        if (this.energy >= 1 && emptyNeighbours.length > 0) {
-            const randomIndex = Math.floor(Math.random() * emptyNeighbours.length);
-            const randomNeighbour = emptyNeighbours[randomIndex];
-            const [neighbourY, neighbourX] = randomNeighbour.pos;
-            this.energy -= 1;
-            grid[neighbourY][neighbourX] = new Water(this.energy - 1);
-        }
-
-        if (this.energy >= 1 && carnivoreNeighbours.length > 0) {
-            for (let i = 0; i < carnivoreNeighbours.length; i++) {
-                const carnivoreNeighbour = carnivoreNeighbours[i];
-                const [neighbourY, neighbourX] = carnivoreNeighbour.pos;
-                grid[neighbourY][neighbourX] = new Water(this.energy - 1);
-            }
-        }
-
-        return grid;
+    if (this.energy >= 60) { // Wenn Energie 60 oder mehr ist
+      this.multiply(); // multiplizieren
+      this.energy -= 10; // energie wird runter gehen um 30
     }
+    if (this.energy <= 0) { // Wenn Energie 0 ist
+      matrix[this.row][this.col] = new Empty(); // wird leer
+    }
+  }
+
+  eat() {
+    // Tier sucht (Nachbar) GrassEater frisst sie und gewinnt Energie sonst verliert es Energie
+    let grasseaterNeighbours = findNeighbourPositions(this.row, this.col, 1, GrassEater);
+
+    if (grasseaterNeighbours.length > 0) {
+      let randomgrasseaterfield = random(grasseaterNeighbours);
+      updateCreaturePosition(this, randomgrasseaterfield);
+      this.energy += 10;
+    } else {
+      this.energy -= 0.5;
+    }
+  }
+
+  multiply() {
+    let emptyPositions = findNeighbourPositions(this.row, this.col, 0, Empty);
+    if (emptyPositions.length > 0) {
+      let newPos = random(emptyPositions);
+      let row = newPos[0];
+      let col = newPos[1];
+      matrix[row][col] = new MeatEater([0], [1]);
+    }
+  }
 }
 
-class Wall {
-    constructor() {
-        this.color = '#A56601';
-    }
+// Liste von Listen. EnthÃ¤lt alle Kreaturen.
+let matrix = [];
+// GrÃ¶ÃŸe der Matrix, Anzahl der Zellen in Breite und HÃ¶he
+let matrixSize = 50;
+// AnzeigengrÃ¶ÃŸe in Pixeln fÃ¼r jede Zelle
+let blockSize = 15;
 
-    nextStep(x, y, grid) {
-        return grid;
+// Wahrscheinlichkeit, mit der jede Kreatur erstellt wird
+let creatureProbabilities = [
+  [Grass, 0.25], // Gras: 25% Wahrscheinlichkeit
+  [GrassEater, 0.05], // Grasfresser: 5% Wahrscheinlichkeit
+  [MeatEater, 0.02], // Fleischfresser: 2% Wahrscheinlichkeit
+];
+
+// WÃ¤hlt basierend auf den Wahrscheinlichkeiten zufÃ¤llig eine Kreatur aus
+function getRandomCreature() {
+  let rand = random(); // Zufallszahl zwischen 0 und 1
+  let sum = 0;
+  for (let i = 0; i < creatureProbabilities.length; i++) {
+    let creatureClass = creatureProbabilities[i][0];
+    let probability = creatureProbabilities[i][1];
+    sum += probability; // Summiert die Wahrscheinlichkeiten
+    if (rand < sum) {
+      // Wenn die Zufallszahl kleiner ist, wÃ¤hle diese Kreatur
+      return new creatureClass();
     }
+  }
+  return new Empty(); // Wenn keine andere Bedingung zutrifft, wird ein leeres Feld zurÃ¼ckgegeben
 }
 
-class Carnivore {
-    constructor() {
-        this.energy = 100;
-        this.color = '#FF0000';
-    }
+// FÃ¼llt die Matrix zufÃ¤llig mit Kreaturen basierend auf den Wahrscheinlichkeiten
 
-    nextStep(x, y, grid) {
-        const grassEaterNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof GrassEater);
-        const emptyNeighbours = getAllNeighbours(x, y, grid).filter(neighbour => neighbour.value instanceof EmptyBeing);
-
-        if (this.energy <= -100) {
-            grid[y][x] = new EmptyBeing();
-        } else if (this.energy >= 120 && emptyNeighbours.length > 0) {
-            const randomIndex = Math.floor(Math.random() * emptyNeighbours.length);
-            const randomNeighbour = emptyNeighbours[randomIndex];
-            const [neighbourY, neighbourX] = randomNeighbour.pos;
-            this.energy -= 100;
-            grid[neighbourY][neighbourX] = new Carnivore();
-        } else if (grassEaterNeighbours.length > 0) {
-            const randomIndex = Math.floor(Math.random() * grassEaterNeighbours.length);
-            const randomNeighbour = grassEaterNeighbours[randomIndex];
-            const [neighbourY, neighbourX] = randomNeighbour.pos;
-            this.energy += 10;
-            grid[neighbourY][neighbourX] = this;
-            grid[y][x] = new EmptyBeing();
-        } else {
-            this.energy -= 1;
-            console.log(this.energy);
-        }
-
-        return grid;
-    }
+// Aktualisiert die Position einer Kreatur in der Matrix
+// Erstellt ein neues leeres Objekt an der alten Position
+function updateCreaturePosition(creature, newPos) {
+  if (matrix[creature.row][creature.col] !== creature) {
+    let creatureType = creature.constructor.name;
+    let message = `Ein ${creatureType}-Kreatur soll bewegt werden, aber befindet sich nicht mehr in der Matrix.\
+Das liegt wahrscheinlich daran, dass sie zuvor "gestorben" ist und die Position bereits\
+von einer anderen Kreatur eingenommen wurde. Nachdem eine Kreatur "stirbt", sollte sie\
+sich nicht mehr bewegen. Wahrscheinlich hast du die Logik fÃ¼rs sterben vor der logik fÃ¼rs\
+fressen/bewegen in der step() Methode. Versuche, die Logik fÃ¼rs sterben ganz ans Ende der\
+step() Methode zu verschieben oder verwende ein return, um die Methode nach dem Sterben zu beenden.`;
+    throw new Error(message);
+  }
+  let newRow = newPos[0];
+  let newCol = newPos[1];
+  matrix[newRow][newCol] = creature;
+  matrix[creature.row][creature.col] = new Empty();
+  creature.row = newRow;
+  creature.col = newCol;
 }
 
-const ROWS = 50;
-const COLUMNS = 50;
-const SPACING = 10;
-const SIZE = 10;
+// FÃ¼r eine gegebene Position werden alle Nachbarpositionen gesucht,
+// die einen bestimmten Kreaturentyp enthalten und innerhalb einer bestimmten Distanz liegen
+// Gibt eine Liste von [row, col]-Positionen zurÃ¼ck
+// Beispiel: findNeighbourPositions(10, 10, 1, Empty) gibt alle leeren Zellen
+// um die Position 10, 10 im Abstand von 1 zurÃ¼ck.
+// Wenn alle Zellen leer sind, wird [[9, 9], [9, 10], [9, 11], [10, 9], [10, 11], [11, 9], [11, 10], [11, 11]] zurÃ¼ckgegeben
+function findNeighbourPositions(row, col, distance, Typ) {
+  let positions = [];
+  for (let i = row - distance; i <= row + distance; i++) {
+    for (let j = col - distance; j <= col + distance; j++) {
+      let inMatrix = i >= 0 && j >= 0 && i < matrixSize && j < matrixSize;
 
-//initalises grid to an empty grid
-let grid = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(new EmptyBeing()));
-
-let gameActive = false;
-
-function drawGrid(grid, spacing, size) {
-    push();
-    translate(spacing, spacing);
-
-    for (let y = 0; y < grid[0].length; y++) {
-        for (let x = 0; x < grid.length; x++) {
-            push();
-            translate(spacing * x, spacing * y);
-            drawButton(grid[y][x].color, size);
-            pop();
-        }
+      if (
+        inMatrix == true &&
+        (row != i || col != j) &&
+        matrix[i][j] instanceof Typ
+      ) {
+        positions.push([i, j]);
+      }
     }
+  }
 
-    pop();
+  return positions;
 }
 
-//draws a button which is either on or off
-function drawButton(color, size) {
-    push();
-    fill(color);
-    rect(0, 0, size, size, 3);
-    pop();
-}
-
-function mouseClicked() {
-    const entityClasses = [Grass, GrassEater, Carnivore, Water, Wall, EmptyBeing]
-
-    const mousecellx = Math.floor(mouseX / SPACING) - 1;
-    const mousecelly = Math.floor(mouseY / SPACING) - 1;
-
-    if (mousecellx < COLUMNS && mousecelly < ROWS) {
-        const currentCell = grid[mousecelly][mousecellx];
-
-        const currentIndex = entityClasses.findIndex(cls => currentCell instanceof cls);
-
-        const nextIndex = (currentIndex + 1) % entityClasses.length;
-
-        grid[mousecelly][mousecellx] = new entityClasses[nextIndex]();
-
-        drawGrid(grid, SPACING, SIZE);
+function fillRandomMatrix() {
+  for (let row = 0; row < matrixSize; row++) {
+    // durch jede Zeilen laufen
+    let newRow = []; // eine neu leere Zeile erstellen
+    for (let col = 0; col < matrixSize; col++) {
+      // durch jede Spalte laufen
+      // falls es die letzte Spalte ist, setze Wasser
+      //  wenn es die letzte Spalte (ganz rechts) ist kommt das Wasser
+      newRow.push(
+        col == 0 || col === matrixSize - 1 ? new Water() : getRandomCreature() // das wasser kommt von von beide seiten (Rechts und Links)
+      );
     }
+    matrix.push(newRow); // die Zeile zur Matrix hinzufÃ¼gen
+
+  }
 }
-
-function getAllNeighbours(x, y, grid) {
-    function shuffle(array) {
-        let currentIndex = array.length;
-        while (currentIndex != 0) {
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-            [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex], array[currentIndex]];
-        }
-    }
-
-    const neighbourOffsets = [
-        [1, 1],   // bottom-right
-        [1, 0],   // bottom
-        [1, -1],  // bottom-left
-        [0, 1],   // right
-        [0, -1],  // left
-        [-1, 1],  // top-right
-        [-1, 0],  // top
-        [-1, -1]  // top-left
-    ];
-
-    const neighbours = [];
-
-    for (const offset of neighbourOffsets) {
-        const newRow = y + offset[0];
-        const newCol = x + offset[1];
-
-        if (newRow >= 0 && newRow < grid.length &&
-            newCol >= 0 && newCol < grid[newRow].length) {
-
-            neighbours.push({
-                pos: [newRow, newCol],
-                value: grid[newRow][newCol]
-            });
-        }
-    }
-
-    shuffle(neighbours);
-
-    return neighbours
-}
-
-
-//actualises the board from old_grid to new_grid by the game of life rules
-function actualiseBoard() {
-    let newGrid = grid.map(row => row.slice());
-
-    for (let y = 0; y < grid.length; y++) {
-        for (let x = 0; x < grid[y].length; x++) {
-            // Call nextStep and update the specific cell in newGrid
-            newGrid = grid[y][x].nextStep(x, y, grid);
-        }
-    }
-
-    return newGrid;
-}
-
-
-//setup function
+// Macht das Zeichenfenster fertig, fÃ¼llt die Matrix und stellt die wiederholung ein
 function setup() {
-    createCanvas(1600, 1600);
-    frameRate(60);
-    noStroke();
-    background(51);
-
-    //draw inital grid
-    drawGrid(grid, SPACING, SIZE);
+  createCanvas(matrixSize * blockSize, matrixSize * blockSize);
+  fillRandomMatrix();
+  noStroke();
+  frameRate(30);
 }
 
-//resets, actualises and draws the board
 function draw() {
-    if (keyIsPressed) {
-        gameActive = true;
-    }
+  background(200);
+  for (let row = 0; row < matrixSize; row++) {
+    for (let col = 0; col < matrixSize; col++) {
+      let obj = matrix[row][col];
 
-    if (gameActive && frameCount % 5 == 0) {
-        grid = actualiseBoard();
-        drawGrid(grid, SPACING, SIZE);
+      if (obj instanceof Empty) continue;
+
+      obj.row = row;
+      obj.col = col;
+
+      if (obj.stepCount === frameCount) {
+        obj.step();
+        obj.stepCount++;
+        console.log(frameCount)
+      }
+
+      fill(obj.color);
+      rect(blockSize * obj.col, blockSize * obj.row, blockSize, blockSize);
     }
+  }
+}
+// Wasser Klasse
+class Water {
+  constructor() {
+    this.stepCount = frameCount + 1;
+    this.color = "cyan";
+    this.energy = 3;
+  }
+
+  step() {
+    this.energy++; // energie wird mehr
+    if (this.energy >= 7) { // Wenn Energie 7 ist
+      this.multiply(); // Multiplizert
+      this.energy = 1; // Energie wird zu 1
+    }
+    if (frameCount > 250) { // Wenn mehr als 250 Frames vergangen sind
+      let zahl = random();   // Zufallszahl  wird erzeugt.
+      if (zahl > 0.97) { // Wenn die Zahl grÃ¶ÃŸer als 0.97 ist
+        matrix[this.row][this.col] = new Grass(); // neues Grass
+        return;
+      }
+    }
+  }
+
+  multiply() {
+    let emptyPositions = findNeighbourPositions(this.row, this.col, 1, Empty);
+    let waterPositions = findNeighbourPositions(this.row, this.col, 1, Water);
+
+// Wasser soll auf freie Felder gehen
+if (frameCount <= 150) {
+      if (emptyPositions.length > 0) {
+        let newPos = random(emptyPositions);
+        let row = newPos[0];
+        let col = newPos[1];
+        matrix[row][col] = new Water();
+      }
+    }
+    else {
+      if (waterPositions.length > 0) {
+        let newPos = random(waterPositions);
+        let row = newPos[0];
+        let col = newPos[1];
+        let zahl = random();
+        if (zahl > 0.95) {
+          matrix[row][col] = new Grass();
+          return;
+        }
+      }
+    }
+  }
 }
