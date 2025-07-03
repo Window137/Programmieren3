@@ -93,9 +93,9 @@ function fillRandomMatrix() {
     }
 }
 
-    fillRandomMatrix();
-    noStroke();
-    frameRate(30);
+fillRandomMatrix();
+while (true) {
+    setInterval(draw, 50);
 }
 
 function draw() {
