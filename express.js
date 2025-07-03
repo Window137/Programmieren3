@@ -12,7 +12,7 @@ app.get("/google/:search", (req, res) => {
 });
 
 app.get("/{*any}", (_req, res) => {
-    res.send("womp womp");
+    res.status(404).send("womp womp");
 });
 
 app.get("/name/:name", (req, res) => {
