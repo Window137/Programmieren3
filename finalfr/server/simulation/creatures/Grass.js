@@ -1,4 +1,10 @@
-
+import {
+    findNeighbourPositions,
+    frameCount,
+    matrix,
+    random,
+    int
+} from "../../utils";
 
 //Grass Klasse
 export default class Grass {
@@ -6,7 +12,6 @@ export default class Grass {
         this.stepCount = frameCount + 1;
         this.color = "green"; // farbe zu gruen
         this.energy = int(random(1));
-        this.index = 1;
     }
 
     step() {

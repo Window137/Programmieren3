@@ -1,3 +1,12 @@
+import {
+    findNeighbourPositions,
+    updateCreaturePosition,
+    frameCount,
+    matrix,
+    random,
+} from "../../utils";
+import Water from "./Water";
+import Empty from "./Empty";
 // Startenergie: Jeder Fleischfresser beginnt mit einer Energie von 100.
 // Nahrungssuche: In jedem Zyklus sucht der Fleischfresser in seiner unmittelbaren Umgebung nach Nahrung.
 //     Grasfresser gefunden:
@@ -15,7 +24,6 @@ export default class MeatEater {
         this.stepCount = frameCount + 1;
         this.color = "red";
         this.energy = 100;
-        this.index = 3;
     }
 
     step() {

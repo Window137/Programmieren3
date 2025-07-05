@@ -1,10 +1,18 @@
+import {
+    findNeighbourPositions,
+    frameCount,
+    matrix,
+    random,
+} from "../../utils";
+import Grass from "./Grass";
+import Empty from "./Empty";
+
 // Wasser Klasse
-module.exports = class Water {
+export default class Water {
     constructor() {
         this.stepCount = frameCount + 1;
         this.color = "cyan";
         this.energy = 3;
-        this.index = 4;
     }
 
     step() {

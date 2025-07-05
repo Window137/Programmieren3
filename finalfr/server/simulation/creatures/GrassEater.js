@@ -1,3 +1,14 @@
+import {
+    findNeighbourPositions,
+    updateCreaturePosition,
+    frameCount,
+    matrix,
+    random
+} from "../../utils";
+import Water from "./Water";
+import Empty from "./Empty";
+import Grass from "./Grass";
+
 // Grasseater klasse
 export default class GrassEater {
     // Dein Code hier
@@ -6,7 +17,6 @@ export default class GrassEater {
         this.stepCount = frameCount + 1;
         this.color = "yellow";
         this.energy = 5;
-        this.index = 2;
     }
 
     step() {

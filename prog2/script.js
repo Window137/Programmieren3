@@ -4,13 +4,13 @@ class Empty { }
 class Grass {
   constructor() {
     this.stepCount = frameCount + 1;
-    this.color = "green"; // farbe zu grÃ¼n
+    this.color = "green"; // farbe zu gruen
     this.energy = int(random(1));
   }
 
   step() {
-    // ErhÃ¶ht die Energie des Gras um 1
-    this.energy++; // erhÃ¶t den energie um 1
+    // Erhoeht die Energie des Gras um 1
+    this.energy++; // erhoet den energie um 1
     if (this.energy >= 7) { // wenn die energie 7 ist
       this.multiply(); //multizipliern
       this.energy = 0; // dann energie auf 0 setzen
@@ -18,7 +18,7 @@ class Grass {
   }
 
   multiply() {
-    // Wenn leere Nachbarfelder gibt wird zufÃ¤llige eines ausgewÃ¤hlt und dort neues Gras erzeugt.
+    // Wenn leere Nachbarfelder gibt wird zufaellige eines ausgewaehlt und dort neues Gras erzeugt.
     let emptyFields = findNeighbourPositions(this.row, this.col, 1, Empty);
 
     if (emptyFields.length > 0) {
@@ -61,13 +61,13 @@ class GrassEater {
     let grassNeighbours = findNeighbourPositions(this.row, this.col, 1, Grass);
 
     if (grassNeighbours.length > 0) { // Wenn Gras da ist
-      let randomgrassfield = random(grassNeighbours); // WÃ¤hle Grasfeld
+      let randomgrassfield = random(grassNeighbours); // Waehle Grasfeld
       updateCreaturePosition(this, randomgrassfield);  // Bewege zum Gras
       this.energy++; // Energie steigt +1
     } else { // falls Kein Gras gefunden
       let emptyNeighbours = findNeighbourPositions(this.row, this.col, 1, Empty); // Suche leere Felder
       if (emptyNeighbours.length > 0) { // Wenn leerer Platz da ist
-        let newPos = random(emptyNeighbours); // WÃ¤hle leeres Feld
+        let newPos = random(emptyNeighbours); // Waehle leeres Feld
         updateCreaturePosition(this, newPos); // Bewege dich hin
       }
       this.energy -= 1; // Energie geht runter
@@ -75,7 +75,7 @@ class GrassEater {
   }
 
   multiply() {
-        // Wenn leere Nachbarfelder gibt wird zufÃ¤llige eines ausgewÃ¤hlt und dort neues GrassEazer erzeugt.
+        // Wenn leere Nachbarfelder gibt wird zufaellige eines ausgewaehlt und dort neues GrassEazer erzeugt.
     let emptyPositions = findNeighbourPositions(this.row, this.col, 1, Empty);
     if (emptyPositions.length > 0) {
       let newPos = random(emptyPositions);
@@ -90,13 +90,13 @@ class GrassEater {
 // Nahrungssuche: In jedem Zyklus sucht der Fleischfresser in seiner unmittelbaren Umgebung nach Nahrung.
 //     Grasfresser gefunden:
 //         Der Fleischfresser bewegt sich auf das Feld, auf dem sich der Grasfresser befindet.
-//         Dadurch wird der Grasfresser "gefressen" und der Fleischfresser erhÃ¤lt 10 Energiepunkte dazu.
+//         Dadurch wird der Grasfresser "gefressen" und der Fleischfresser erhaelt 10 Energiepunkte dazu.
 //     Kein Grasfresser gefunden:
 //         Der Fleischfresser kann kein leeres Feld suchen, sondern verliert 1 Energiepunkt.
 // Fortpflanzung: Erreicht der Fleischfresser eine Energie von 120 oder mehr, pflanzt er sich fort.
 //     Er sucht nach einem leeren Feld in seiner Umgebung.
 //     Wenn ein leeres Feld gefunden wird, wird dort ein neuer Fleischfresser erstellt.
-//     Der ursprÃ¼ngliche Fleischfresser verliert 100 Energiepunkte durch die Fortpflanzung.
+//     Der urspruengliche Fleischfresser verliert 100 Energiepunkte durch die Fortpflanzung.
 // Tod: Sinkt die Energie des Fleischfressers auf 0 oder weniger, stirbt er und das Feld, auf dem er sich befand, wird leer.
 class MeatEater {
   constructor() {
@@ -148,11 +148,11 @@ class MeatEater {
   }
 }
 
-// Liste von Listen. EnthÃ¤lt alle Kreaturen.
+// Liste von Listen. Enthaelt alle Kreaturen.
 let matrix = [];
-// GrÃ¶ÃŸe der Matrix, Anzahl der Zellen in Breite und HÃ¶he
+// Groesse der Matrix, Anzahl der Zellen in Breite und Hoehe
 let matrixSize = 50;
-// AnzeigengrÃ¶ÃŸe in Pixeln fÃ¼r jede Zelle
+// Anzeigengroesse in Pixeln fuer jede Zelle
 let blockSize = 15;
 
 // Wahrscheinlichkeit, mit der jede Kreatur erstellt wird
@@ -162,7 +162,7 @@ let creatureProbabilities = [
   [MeatEater, 0.02], // Fleischfresser: 2% Wahrscheinlichkeit
 ];
 
-// WÃ¤hlt basierend auf den Wahrscheinlichkeiten zufÃ¤llig eine Kreatur aus
+// Waehlt basierend auf den Wahrscheinlichkeiten zufaellig eine Kreatur aus
 function getRandomCreature() {
   let rand = random(); // Zufallszahl zwischen 0 und 1
   let sum = 0;
@@ -171,14 +171,14 @@ function getRandomCreature() {
     let probability = creatureProbabilities[i][1];
     sum += probability; // Summiert die Wahrscheinlichkeiten
     if (rand < sum) {
-      // Wenn die Zufallszahl kleiner ist, wÃ¤hle diese Kreatur
+      // Wenn die Zufallszahl kleiner ist, waehle diese Kreatur
       return new creatureClass();
     }
   }
-  return new Empty(); // Wenn keine andere Bedingung zutrifft, wird ein leeres Feld zurÃ¼ckgegeben
+  return new Empty(); // Wenn keine andere Bedingung zutrifft, wird ein leeres Feld zurueckgegeben
 }
 
-// FÃ¼llt die Matrix zufÃ¤llig mit Kreaturen basierend auf den Wahrscheinlichkeiten
+// Fuellt die Matrix zufaellig mit Kreaturen basierend auf den Wahrscheinlichkeiten
 
 // Aktualisiert die Position einer Kreatur in der Matrix
 // Erstellt ein neues leeres Objekt an der alten Position
@@ -188,8 +188,8 @@ function updateCreaturePosition(creature, newPos) {
     let message = `Ein ${creatureType}-Kreatur soll bewegt werden, aber befindet sich nicht mehr in der Matrix.\
 Das liegt wahrscheinlich daran, dass sie zuvor "gestorben" ist und die Position bereits\
 von einer anderen Kreatur eingenommen wurde. Nachdem eine Kreatur "stirbt", sollte sie\
-sich nicht mehr bewegen. Wahrscheinlich hast du die Logik fÃ¼rs sterben vor der logik fÃ¼rs\
-fressen/bewegen in der step() Methode. Versuche, die Logik fÃ¼rs sterben ganz ans Ende der\
+sich nicht mehr bewegen. Wahrscheinlich hast du die Logik fuers sterben vor der logik fuers\
+fressen/bewegen in der step() Methode. Versuche, die Logik fuers sterben ganz ans Ende der\
 step() Methode zu verschieben oder verwende ein return, um die Methode nach dem Sterben zu beenden.`;
     throw new Error(message);
   }
@@ -201,12 +201,12 @@ step() Methode zu verschieben oder verwende ein return, um die Methode nach dem 
   creature.col = newCol;
 }
 
-// FÃ¼r eine gegebene Position werden alle Nachbarpositionen gesucht,
+// Fuer eine gegebene Position werden alle Nachbarpositionen gesucht,
 // die einen bestimmten Kreaturentyp enthalten und innerhalb einer bestimmten Distanz liegen
-// Gibt eine Liste von [row, col]-Positionen zurÃ¼ck
+// Gibt eine Liste von [row, col]-Positionen zurueck
 // Beispiel: findNeighbourPositions(10, 10, 1, Empty) gibt alle leeren Zellen
-// um die Position 10, 10 im Abstand von 1 zurÃ¼ck.
-// Wenn alle Zellen leer sind, wird [[9, 9], [9, 10], [9, 11], [10, 9], [10, 11], [11, 9], [11, 10], [11, 11]] zurÃ¼ckgegeben
+// um die Position 10, 10 im Abstand von 1 zurueck.
+// Wenn alle Zellen leer sind, wird [[9, 9], [9, 10], [9, 11], [10, 9], [10, 11], [11, 9], [11, 10], [11, 11]] zurueckgegeben
 function findNeighbourPositions(row, col, distance, Typ) {
   let positions = [];
   for (let i = row - distance; i <= row + distance; i++) {
@@ -238,11 +238,11 @@ function fillRandomMatrix() {
         col == 0 || col === matrixSize - 1 ? new Water() : getRandomCreature() // das wasser kommt von von beide seiten (Rechts und Links)
       );
     }
-    matrix.push(newRow); // die Zeile zur Matrix hinzufÃ¼gen
+    matrix.push(newRow); // die Zeile zur Matrix hinzufuegen
 
   }
 }
-// Macht das Zeichenfenster fertig, fÃ¼llt die Matrix und stellt die wiederholung ein
+// Macht das Zeichenfenster fertig, fuellt die Matrix und stellt die wiederholung ein
 function setup() {
   createCanvas(matrixSize * blockSize, matrixSize * blockSize);
   fillRandomMatrix();
@@ -288,7 +288,7 @@ class Water {
     }
     if (frameCount > 250) { // Wenn mehr als 250 Frames vergangen sind
       let zahl = random();   // Zufallszahl  wird erzeugt.
-      if (zahl > 0.97) { // Wenn die Zahl grÃ¶ÃŸer als 0.97 ist
+      if (zahl > 0.97) { // Wenn die Zahl groesser als 0.97 ist
         matrix[this.row][this.col] = new Grass(); // neues Grass
         return;
       }
