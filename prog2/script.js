@@ -264,7 +264,6 @@ function draw() {
       if (obj.stepCount === frameCount) {
         obj.step();
         obj.stepCount++;
-        console.log(frameCount)
       }
 
       fill(obj.color);
@@ -322,3 +321,4 @@ if (frameCount <= 150) {
     }
   }
 }
+
