@@ -6,7 +6,7 @@ function main() {
     function handleSubmit(evt) {
         var val = input.value;
         if (val != "") {
-            socket.emit("Nachricht senden", val);
+            socket.emit("send message", val);
         }
     }
     button.onclick = handleSubmit;
@@ -16,7 +16,7 @@ function main() {
         chatDiv.appendChild(p);
         input.value = "";
     }
-    socket.on('Nachricht anzeigen', handleMessage);
+    socket.on('display message', handleMessage);
 } 
 
 window.onload = main;

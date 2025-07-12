@@ -2,7 +2,7 @@ body {
     font-family: Arial, Helvetica, sans-serif!important;
 }
 
-#chat {
+#Chat {
     width: 1000px;
     margin:auto;
     background-color: #FAFAFA;
@@ -11,7 +11,7 @@ body {
     text-align: center;
 }
 
-#message {
+#Nachricht {
     text-align: center;
     border: 2px solid #3498db;
     width: 200px;
@@ -20,7 +20,7 @@ body {
     font-size: 1.25em;
 }
 
-#submit {
+#Senden {
     width: 175px;
     height: 50px;
     border-radius: 0;
@@ -30,7 +30,7 @@ body {
     border: none;
 }
 
-#chat_p {
+#Chat_p {
     font-weight: bold;
     font-size: 1.5em;
     color: #34495e;
