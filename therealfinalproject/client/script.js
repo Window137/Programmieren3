@@ -75,7 +75,7 @@ class GrassEater {
   }
 
   multiply() {
-        // Wenn leere Nachbarfelder gibt wird zufaellige eines ausgewaehlt und dort neues GrassEazer erzeugt.
+    // Wenn leere Nachbarfelder gibt wird zufaellige eines ausgewaehlt und dort neues GrassEazer erzeugt.
     let emptyPositions = findNeighbourPositions(this.row, this.col, 1, Empty);
     if (emptyPositions.length > 0) {
       let newPos = random(emptyPositions);
@@ -106,7 +106,7 @@ class MeatEater {
   }
 
   step() {
- // Finde WasserNachbarn. wenn 7 oder mehr da sind, setze Zelle auf Wasser und stop
+    // Finde WasserNachbarn. wenn 7 oder mehr da sind, setze Zelle auf Wasser und stop
     let WasserNachbarn = findNeighbourPositions(this.row, this.col, 1, Water);
     if (WasserNachbarn.length >= 7) { // Wenn es 7 oder mehr Wasser-Nachbarn gibt
       matrix[this.row][this.col] = new Water();   // Dann wird diese Zelle zu Wasser.
@@ -161,6 +161,8 @@ let creatureProbabilities = [
   [GrassEater, 0.05], // Grasfresser: 5% Wahrscheinlichkeit
   [MeatEater, 0.02], // Fleischfresser: 2% Wahrscheinlichkeit
 ];
+
+let frameCount = 0;
 
 // Waehlt basierend auf den Wahrscheinlichkeiten zufaellig eine Kreatur aus
 function getRandomCreature() {
@@ -270,6 +272,7 @@ function draw() {
       rect(blockSize * obj.col, blockSize * obj.row, blockSize, blockSize);
     }
   }
+  frameCount++;
 }
 // Wasser Klasse
 class Water {
@@ -298,8 +301,8 @@ class Water {
     let emptyPositions = findNeighbourPositions(this.row, this.col, 1, Empty);
     let waterPositions = findNeighbourPositions(this.row, this.col, 1, Water);
 
-// Wasser soll auf freie Felder gehen
-if (frameCount <= 150) {
+    // Wasser soll auf freie Felder gehen
+    if (frameCount <= 150) {
       if (emptyPositions.length > 0) {
         let newPos = random(emptyPositions);
         let row = newPos[0];
@@ -321,4 +324,17 @@ if (frameCount <= 150) {
     }
   }
 }
+
+
+function main() {
+  const socket = io();
+  const button = document.getElementById('Senden');
+  function handleSubmit(evt) {
+    console.log("sending message")
+    socket.emit("send message", {"state": matrix, "time": frameCount});
+  }
+  button.onclick = handleSubmit;
+}
+
+window.onload = main;
 
