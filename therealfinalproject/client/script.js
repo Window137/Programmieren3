@@ -164,6 +164,8 @@ let creatureProbabilities = [
 
 let frameCount = 0;
 
+const socket = io();
+
 // Waehlt basierend auf den Wahrscheinlichkeiten zufaellig eine Kreatur aus
 function getRandomCreature() {
   let rand = random(); // Zufallszahl zwischen 0 und 1
@@ -253,6 +255,9 @@ function setup() {
 }
 
 function draw() {
+  if (frameCount % 60 === 0) {
+    handleSubmit();
+  }
   background(200);
   for (let row = 0; row < matrixSize; row++) {
     for (let col = 0; col < matrixSize; col++) {
@@ -327,13 +332,13 @@ class Water {
 
 
 function main() {
-  const socket = io();
   const button = document.getElementById('Senden');
-  function handleSubmit(evt) {
-    console.log("sending message")
-    socket.emit("send message", {"state": matrix, "time": frameCount});
-  }
   button.onclick = handleSubmit;
+}
+
+function handleSubmit() {
+  console.log("sending message")
+  socket.emit("send message", {"state": matrix, "time": frameCount});
 }
 
 window.onload = main;
